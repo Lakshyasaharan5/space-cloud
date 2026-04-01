@@ -1,2 +1,2 @@
-# distributed-cloud-storage
-Custom Google Drive like distributed cloud storage platform
+# SpaceCloud
+Google Drive like distributed cloud storage platform
