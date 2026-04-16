@@ -1,6 +1,8 @@
 package com.spacecloud.datanode.service;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -23,5 +25,20 @@ public class ChunkStorageService {
 
         Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
         return "Ok";
+    }
+
+    public ResponseEntity<?> getChunk(String fileId, int chunkIndex) throws IOException {
+
+        Path filePath = Paths.get("data", fileId, String.valueOf(chunkIndex));
+
+        if (!Files.exists(filePath)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        InputStream inputStream = Files.newInputStream(filePath);
+
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/octet-stream")
+                .body(new InputStreamResource(inputStream));
     }
 }
