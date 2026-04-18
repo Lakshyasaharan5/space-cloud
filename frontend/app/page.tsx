@@ -1,27 +1,35 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import clsx from "clsx";
+import { JSX } from "react";
 
-export default function Home() {
-  const [masterMsg, setMasterMsg] = useState("");
-  const [dataNodeMsg, setDataNodeMsg] = useState("");
+export default function Home() {  
 
-  useEffect(() => {
-    fetch("http://localhost:8080/hello")
-      .then(res => res.text())
-      .then(setMasterMsg);
-
-    fetch("http://localhost:8081/hello")
-      .then(res => res.text())
-      .then(setDataNodeMsg);
-  }, []);
+  function rows(): JSX.Element[] {
+    const rowArray = [];
+    for (let i = 0; i < 5; i++) {
+      rowArray.push(
+        <div key={i} className="w-full h-10 border-2 border-purple-300"></div>
+      );
+    }
+    return rowArray;
+  }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-      <h1 className="text-4xl font-bold">Space Cloud</h1>
-
-      <p>Master: {masterMsg}</p>
-      <p>DataNode: {dataNodeMsg}</p>
+    <div className={clsx(
+      "h-screen",
+      "border-5",
+      "border-red-500",
+      "flex flex-col",
+      "gap-5"
+    )}>
+      <div className="w-full h-20 sm:h-40 border-5 border-blue-500 flex justify-center items-center">
+        <button>Upload</button>
+      </div>
+      <div className="w-full h-full border-5 border-blue-500 flex flex-col gap-6">
+        {rows()}
+      </div>
     </div>
   );
 }
+
