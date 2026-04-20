@@ -5,20 +5,23 @@ import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Download, Trash2 } from "lucide-react";
+import Stars from "@/components/Stars";
+
 
 export default function Home() {
 
   return (
     <div className={clsx(
-      "h-screen",
+      "min-h-screen",
       "flex",
       "justify-center",
       "items-center"
     )}>
-      <div className="w-60 h-100 sm:w-150 sm:h-120 xl:w-200 xl:h-180 rounded-xl flex flex-col shadow-2xl p-2">
-        <div className="h-16 bg-gray-50 flex items-center justify-between rounded-t-xl px-4">
+      <Stars />
+      <div className="relative z-10 w-60 h-100 sm:w-150 sm:h-120 xl:w-200 xl:h-180 rounded-xl flex flex-col shadow-2xl p-2 bg-white">
+        <div className="h-16 bg-gray-300 flex items-center justify-between rounded-t-xl px-4">
           <h1 className="text-lg sm:text-2xl font-semibold tracking-tight">
-            Space<span className="text-violet-800">Cloud</span>
+            Space<span className="text-gray-600">Cloud</span>
           </h1>
           <Button variant="outline" size="lg">Upload</Button>
         </div>
@@ -28,7 +31,7 @@ export default function Home() {
               {/* left side */}
               <div className="flex items-center justify-between gap-2">
                 <div>resume.pdf</div>
-                <div className="text-muted-foreground italic">2 MB</div>
+                <div className="text-muted-foreground">2mb</div>
               </div>
               {/* right side */}
               <div className="flex items-center justify-between gap-4">
@@ -45,7 +48,7 @@ export default function Home() {
               {/* left side */}
               <div className="flex items-center justify-between gap-2">
                 <div>image.png</div>
-                <div className="text-muted-foreground italic">5 MB</div>
+                <div className="text-muted-foreground">5mb</div>
               </div>
               {/* right side */}
               <div className="flex items-center justify-between gap-4">
