@@ -16,9 +16,11 @@ public class ChunkEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long chunkId;
+    private Long id;
 
-    private String fileId;
+    @ManyToOne
+    @JoinColumn(name = "fileId", nullable = false)
+    private FileEntity file;
 
     private int chunkIndex;
 

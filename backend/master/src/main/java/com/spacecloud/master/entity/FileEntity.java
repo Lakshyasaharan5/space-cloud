@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "files")
 @Getter
@@ -15,11 +17,8 @@ import lombok.Setter;
 public class FileEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(unique = true)
-    private String clientUploadId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     private String fileName;
 
