@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class UploadInitResponse {
+public class ChunkMapResponse {
     private String fileId;
     private int totalChunks;
     private List<String> datanodes;

@@ -2,7 +2,7 @@ package com.spacecloud.master.service;
 
 import com.spacecloud.master.dto.ChunkInfo;
 import com.spacecloud.master.dto.UploadInitRequest;
-import com.spacecloud.master.dto.UploadInitResponse;
+import com.spacecloud.master.dto.ChunkMapResponse;
 import com.spacecloud.master.entity.ChunkEntity;
 import com.spacecloud.master.entity.FileEntity;
 import com.spacecloud.master.repository.ChunkRepository;
@@ -13,12 +13,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class ChunkService {
+
+    final int CHUNK_SIZE = 1024 * 1024; //1mb
+    final List<String> datanodes = List.of(
+            "http://localhost:8081",
+            "http://localhost:8082",
+            "http://localhost:8083"
+    );
 
     @Autowired
     private FileRepository fileRepository;
@@ -27,15 +35,9 @@ public class ChunkService {
     private ChunkRepository chunkRepository;
 
     @Transactional
-    public UploadInitResponse createChunkMapping(UploadInitRequest request) {
+    public ChunkMapResponse createChunkMapping(UploadInitRequest request) {
 
-        final int CHUNK_SIZE = 1024 * 1024; //1mb
         int totalChunks = (int) Math.ceil((double) request.getFileSize() / CHUNK_SIZE);
-        List<String> datanodes = List.of(
-                "http://localhost:8081",
-                "http://localhost:8082",
-                "http://localhost:8083"
-        );
 
         // store file metadata
         FileEntity file = new FileEntity();
@@ -88,12 +90,45 @@ public class ChunkService {
 
         chunkRepository.saveAll(chunkEntities);
 
-        UploadInitResponse response = new UploadInitResponse();
+        ChunkMapResponse response = new ChunkMapResponse();
         response.setFileId(file.getId().toString());
         response.setDatanodes(datanodes);
         response.setTotalChunks(totalChunks);
         response.setChunks(chunks);
 
+        return response;
+    }
+
+    public ChunkMapResponse getChunkMapping(UUID fileId) {
+        FileEntity fileEntity = fileRepository.findById(fileId)
+                .orElseThrow(() -> new RuntimeException("File not found"));
+        List<ChunkEntity> chunkEntities = chunkRepository.findByFile(fileEntity);
+        List<ChunkInfo> chunks = new ArrayList<>();
+        int totalChunks = chunkEntities.size();
+        for (int i = 0; i < totalChunks; i++) {
+            ChunkEntity chunkEntity = chunkEntities.get(i);
+            ChunkInfo chunk = new ChunkInfo();
+            chunk.setChunkIndex(chunkEntity.getChunkIndex());
+            chunk.setPrimary(chunkEntity.getPrimaryNode());
+
+            long chunkSize = CHUNK_SIZE;
+            if (i == totalChunks - 1) {
+                chunkSize = fileEntity.getFileSize() - ((long) i * CHUNK_SIZE);
+            }
+            chunk.setChunkSize(chunkSize);
+
+            List<Integer> replicas = Arrays.stream(chunkEntity.getReplicaNodes().split(","))
+                            .map(value -> Integer.parseInt(value))
+                            .toList();
+            chunk.setReplicas(replicas);
+
+            chunks.add(chunk);
+        }
+        ChunkMapResponse response = new ChunkMapResponse();
+        response.setFileId(fileId.toString());
+        response.setTotalChunks(totalChunks);
+        response.setDatanodes(datanodes);
+        response.setChunks(chunks);
         return response;
     }
 }
