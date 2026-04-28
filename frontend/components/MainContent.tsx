@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Header from "./Header";
 import FileList from "./FileList";
 import { getFiles } from "@/lib/api";
+import { startDownload } from "@/lib/download";
 
 export type File = {
   fileId: string;
@@ -22,10 +23,18 @@ export default function MainContent() {
             .catch(console.error);
     }, []);
 
-    function downloadFile(id: string) {
-        console.log(id);
-        // TODO: Call API to download file
+    async function downloadFile(id: string, name: string) {
+    try {
+        console.log("Starting download:", id);
+
+        await startDownload(id, name);
+
+        console.log("Download finished:", id);
+    } catch (err) {
+        console.error("Download failed:", err);
+        alert("Download failed. Check console.");
     }
+}
     
     function deleteFile(id: string) {
         console.log(id);
