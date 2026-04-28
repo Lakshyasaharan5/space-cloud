@@ -3,6 +3,7 @@
 
 # data
 data/
+data-*/
 
 # Log file
 *.log

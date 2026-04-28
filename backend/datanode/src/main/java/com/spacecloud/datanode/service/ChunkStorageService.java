@@ -1,6 +1,7 @@
 package com.spacecloud.datanode.service;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,10 +16,16 @@ import java.nio.file.StandardCopyOption;
 @Service
 public class ChunkStorageService {
 
+    private final Path basePath;
+
+    public ChunkStorageService(@Value("${storage.path:data}") String storagePath) {
+        this.basePath = Paths.get(storagePath);
+    }
+
     public String storeChunk(String fileId, int chunkIndex, HttpServletRequest request) throws IOException {
         InputStream inputStream = request.getInputStream();
 
-        Path dir = Paths.get("data", fileId);
+        Path dir = basePath.resolve(fileId);
         Files.createDirectories(dir);
 
         Path filePath = dir.resolve(String.valueOf(chunkIndex));
@@ -29,7 +36,7 @@ public class ChunkStorageService {
 
     public ResponseEntity<?> getChunk(String fileId, int chunkIndex) throws IOException {
 
-        Path filePath = Paths.get("data", fileId, String.valueOf(chunkIndex));
+        Path filePath = basePath.resolve(fileId).resolve(String.valueOf(chunkIndex));
 
         if (!Files.exists(filePath)) {
             return ResponseEntity.notFound().build();
