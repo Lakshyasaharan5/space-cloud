@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.spacecloud.grpc.proto";
+option java_outer_classname = "DeleteProto";
+
+service DeleteService {
+  rpc DeleteFile (DeleteRequest) returns (DeleteResponse);
+}
+
+message DeleteRequest {
+  string fileId = 1;
+}
+
+message DeleteResponse {
+  string status = 1;
+}

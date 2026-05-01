@@ -48,4 +48,22 @@ public class ChunkStorageService {
                 .header("Content-Type", "application/octet-stream")
                 .body(new InputStreamResource(inputStream));
     }
+
+    public void deleteFile(String fileId) throws IOException {
+        Path dir = basePath.resolve(fileId);
+        System.out.println(fileId);
+        if (!Files.exists(dir)) {
+            return; // idempotent
+        }
+
+        Files.walk(dir)
+                .sorted((a, b) -> b.compareTo(a)) // delete children first
+                .forEach(path -> {
+                    try {
+                        Files.deleteIfExists(path);
+                    } catch (IOException e) {
+                        // ignore for now
+                    }
+                });
+    }
 }
