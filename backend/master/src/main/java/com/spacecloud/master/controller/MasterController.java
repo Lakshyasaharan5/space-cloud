@@ -3,7 +3,6 @@ package com.spacecloud.master.controller;
 import com.spacecloud.master.dto.FileInfo;
 import com.spacecloud.master.dto.UploadInitRequest;
 import com.spacecloud.master.dto.ChunkMapResponse;
-import com.spacecloud.master.grpc.DeleteGrpcClient;
 import com.spacecloud.master.service.ChunkService;
 import com.spacecloud.master.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +20,6 @@ public class MasterController {
     @Autowired
     private FileService fileService;
 
-    @Autowired
-    private DeleteGrpcClient deleteGrpcClient;
-
     @PostMapping("/upload/init")
     public ChunkMapResponse getChunkMapping(@RequestBody UploadInitRequest fileInfo) {
         return chunkService.createChunkMapping(fileInfo);
@@ -40,12 +36,14 @@ public class MasterController {
     }
 
     @DeleteMapping("/delete/{fileId}")
-    public String deleteFile(@PathVariable String fileId) {
-        // TODO: mark file as deleted in DB (soft delete)
+    public String deleteFile(@PathVariable UUID fileId) {
+        // Phase 1: mark deleted + drop chunk metadata (committed before gRPC)
+        fileService.softDelete(fileId);
 
-        new Thread(() -> deleteGrpcClient.deleteFileOnAll(fileId)).start();
+        // Phase 2: notify datanodes, then remove file row once they confirm
+        fileService.deleteFromDatanodesAndCleanup(fileId);
 
-        return "Delete triggered";
+        return "Deleted";
     }
 
     @GetMapping("/health")

@@ -29,4 +29,6 @@ public class FileEntity {
     private int totalChunks;
 
     private String createdAt;
+
+    private boolean deleted = false;
 }

@@ -51,7 +51,7 @@ public class ChunkStorageService {
 
     public void deleteFile(String fileId) throws IOException {
         Path dir = basePath.resolve(fileId);
-        System.out.println(fileId);
+        System.out.println("Deleting: " + fileId);
         if (!Files.exists(dir)) {
             return; // idempotent
         }

@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ChunkRepository extends JpaRepository<ChunkEntity, Long> {
     List<ChunkEntity> findByFile(FileEntity file);
+    void deleteByFile(FileEntity file);
 }
