@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 public class DatanodeController {
@@ -15,8 +16,16 @@ public class DatanodeController {
     private ChunkStorageService chunkStorageService;
 
     @PutMapping("/chunks/{fileId}/{chunkIndex}")
-    public String uploadChunk(@PathVariable String fileId, @PathVariable int chunkIndex, HttpServletRequest request) throws IOException {
-        return chunkStorageService.storeChunk(fileId, chunkIndex, request);
+    public String uploadChunk(
+            @PathVariable String fileId,
+            @PathVariable int chunkIndex,
+            @RequestParam(defaultValue = "false") boolean forwarded,
+            HttpServletRequest request) throws IOException {
+        chunkStorageService.storeChunk(fileId, chunkIndex, request);
+        if (!forwarded) {
+            CompletableFuture.runAsync(() -> chunkStorageService.replicateChunk(fileId, chunkIndex));
+        }
+        return "Ok";
     }
 
     @GetMapping("/chunks/{fileId}/{chunkIndex}")
