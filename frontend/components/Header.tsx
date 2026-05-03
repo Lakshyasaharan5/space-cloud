@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { startUpload } from "@/lib/upload";
 
 
-export default function Header() {
+export default function Header({ onUploadComplete }: { onUploadComplete: () => void }) {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const handleClick = () => {
@@ -16,6 +16,7 @@ export default function Header() {
         const file = e.target.files?.[0];
         if (!file) return;
         await startUpload(file);
+        onUploadComplete();
     };
 
     return (

@@ -8,3 +8,13 @@ export const getFiles = async () => {
     throw error;
   }
 };
+
+export const deleteFileApi = async (id: string) => {
+  try {
+    const res = await axios.delete(`http://localhost:8080/delete/${id}`);
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
