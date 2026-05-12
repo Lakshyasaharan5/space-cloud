@@ -2,6 +2,7 @@
 Google Drive like distributed cloud storage platform
 
 ### Frontend
+Single page file management page
 ```
 cd frontend/
 npm run dev
