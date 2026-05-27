@@ -55,6 +55,11 @@ public class ChunkService {
         int replicationFactor = 2; // total copies = 1 primary + 1 replica
 
         for (int i = 0; i < totalChunks; i++) {
+            /*
+            this is fine for initial placement but when someone deletes a file then
+            size of datanodes might get imbalanced so better approach is to keep track
+            of each datanode's usedBytes and then store the new chunks to the least occupied
+            */
             int primaryIndex = i % n;
 
             ChunkInfo chunk = new ChunkInfo();
