@@ -46,6 +46,12 @@ public class MasterController {
         return "Deleted";
     }
 
+    @PostMapping("/files/{fileId}/done")
+    public void uploadDone(@PathVariable UUID fileId) {
+        System.out.println("Client confirmed file upload complete: " + fileId.toString());
+        //later trigger ai service
+    }
+
     @GetMapping("/health")
     public String health() {
         return "Master is up";

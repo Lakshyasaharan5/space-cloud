@@ -1,3 +1,5 @@
+import axios from "axios";
+
 type Chunk = {
     chunkIndex: number;
     chunkSize: number;
@@ -107,4 +109,8 @@ export async function startUpload(file: File) {
     await runWorkers(file, tasks, 4);
 
     console.log("Upload complete");
+
+    // notify master 
+    const doneRes = await axios.post(`http://localhost:8080/files/${data.fileId}/done`)
+    console.log(doneRes);
 }
