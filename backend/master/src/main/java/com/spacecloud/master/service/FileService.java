@@ -6,9 +6,11 @@ import com.spacecloud.master.repository.ChunkRepository;
 import com.spacecloud.master.repository.FileRepository;
 import com.spacecloud.master.dto.FileInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClient;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,14 +18,19 @@ import java.util.UUID;
 @Service
 public class FileService {
 
-    @Autowired
     private FileRepository fileRepository;
-
-    @Autowired
     private ChunkRepository chunkRepository;
-
-    @Autowired
     private DeleteGrpcClient deleteGrpcClient;
+    private RestClient restClient;
+
+    public FileService(FileRepository fileRepository, ChunkRepository chunkRepository, DeleteGrpcClient deleteGrpcClient) {
+        this.fileRepository = fileRepository;
+        this.chunkRepository = chunkRepository;
+        this.deleteGrpcClient = deleteGrpcClient;
+        this.restClient = RestClient.builder()
+                .baseUrl("http://localhost:3001")
+                .build();
+    }
 
     public List<FileInfo> getFileInfoList() {
         return fileRepository.findAllByDeletedFalse().stream()
@@ -51,5 +58,18 @@ public class FileService {
 
         // All datanodes confirmed; remove the file row itself
         fileRepository.deleteById(fileId);
+    }
+
+    public void search() {
+        System.out.println("Searching for files");
+        String res = restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/search")
+                        .queryParam("q", "Where is my anime?")
+                        .build())
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .body(String.class);
+        System.out.println(res);
     }
 }

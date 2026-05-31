@@ -49,6 +49,8 @@ public class MasterController {
     @PostMapping("/files/{fileId}/done")
     public void uploadDone(@PathVariable UUID fileId) {
         System.out.println("Client confirmed file upload complete: " + fileId.toString());
+        // check search api
+        fileService.search();
         //later trigger ai service
     }
 

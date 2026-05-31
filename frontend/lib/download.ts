@@ -196,8 +196,9 @@ export async function startDownload(
     const speedMBps = totalMB / durationSec;
 
     console.log("Download complete");
-    console.log(`Workers: ${workerCount}`);
-    console.log(`Time: ${durationSec.toFixed(2)} sec`);
-    console.log(`Size: ${totalMB.toFixed(2)} MB`);
-    console.log(`Speed: ${speedMBps.toFixed(2)} MB/s`);
+    // uncomment for benchmark
+    // console.log(`Workers: ${workerCount}`);
+    // console.log(`Time: ${durationSec.toFixed(2)} sec`);
+    // console.log(`Size: ${totalMB.toFixed(2)} MB`);
+    // console.log(`Speed: ${speedMBps.toFixed(2)} MB/s`);
 }
