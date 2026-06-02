@@ -60,6 +60,10 @@ public class FileService {
         fileRepository.deleteById(fileId);
     }
 
+    public void publishFileEmbeddingKafkaEvent(UUID fileId) {
+        System.out.println("Start file embedding kafka");
+    }
+
     public void search() {
         System.out.println("Searching for files");
         String res = restClient.get()

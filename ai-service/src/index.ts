@@ -1,7 +1,6 @@
 import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 import { search } from './search.js'
-import { embed } from './embed.js'
 
 const app = new Hono()
 

@@ -5,6 +5,7 @@ import com.spacecloud.master.dto.UploadInitRequest;
 import com.spacecloud.master.dto.ChunkMapResponse;
 import com.spacecloud.master.service.ChunkService;
 import com.spacecloud.master.service.FileService;
+import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,9 +50,14 @@ public class MasterController {
     @PostMapping("/files/{fileId}/done")
     public void uploadDone(@PathVariable UUID fileId) {
         System.out.println("Client confirmed file upload complete: " + fileId.toString());
-        // check search api
+        fileService.publishFileEmbeddingKafkaEvent(fileId);
+    }
+
+    @PostMapping("/files/search")
+    public List<FileInfo> search(@RequestParam("q") String q) {
+        System.out.println("Client search query: " + q);
         fileService.search();
-        //later trigger ai service
+        return fileService.getFileInfoList();
     }
 
     @GetMapping("/health")
