@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 
 export const getFiles = async () => {
   try {
@@ -18,3 +18,18 @@ export const deleteFileApi = async (id: string) => {
   }
 };
 
+export const searchApi = async (query: string) => {
+  try {
+    const config: AxiosRequestConfig = {
+      params: {
+        q: query
+      }
+    }
+    const res = await axios.post("http://localhost:8080/files/search", null, config)
+    console.log(res);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+}

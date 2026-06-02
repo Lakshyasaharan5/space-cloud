@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Download, Trash2 } from "lucide-react";
-import type { File } from "./MainContent";
+import type { File } from "./DashBoard";
 
 export default function FileList(props: { files: File[], deleteFile: (id: string) => void, downloadFile: (id: string, name: string) => void }) {
     return (
@@ -18,7 +18,7 @@ export default function FileList(props: { files: File[], deleteFile: (id: string
                                     <div className="text-sm text-black/40">{formatSize(file.fileSize)}</div>
                                 </div>
                                 {/* right side */}
-                                <div className="flex items-center justify-between gap-4">
+                                <div className="flex items-center justify-between gap-2">
                                     <Button variant="outline" size="icon-sm" onClick={() => props.downloadFile(file.fileId, file.fileName)}>
                                         <Download />
                                     </Button>

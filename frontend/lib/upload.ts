@@ -17,7 +17,7 @@ type UploadResponse = {
 const BASE_CHUNK_SIZE = 1024 * 1024; // 1MB
 
 function createTasks(res: UploadResponse) {
-    console.log("FULL RESPONSE:", res);
+    // console.log("FULL RESPONSE:", res);
     return res.chunks.map((c) => {
         const start = c.chunkIndex * BASE_CHUNK_SIZE;
         const end = start + c.chunkSize;
@@ -44,7 +44,7 @@ async function uploadChunk(
 ) {
     const blob = file.slice(task.start, task.end);
 
-    console.log(`Uploading chunk ${task.chunkIndex}`);
+    // console.log(`Uploading chunk ${task.chunkIndex}`);
 
     await fetch(
         `${task.url}/chunks/${task.fileId}/${task.chunkIndex}`,
@@ -57,7 +57,7 @@ async function uploadChunk(
         }
     );
 
-    console.log(`Finished chunk ${task.chunkIndex}`);
+    // console.log(`Finished chunk ${task.chunkIndex}`);
 }
 
 async function runWorkers(
@@ -74,7 +74,7 @@ async function runWorkers(
             const current = index++;
             const task = tasks[current];
 
-            console.log(`Worker ${id} picked chunk ${task.chunkIndex}`);
+            // console.log(`Worker ${id} picked chunk ${task.chunkIndex}`);
 
             await uploadChunk(file, task);
         }
@@ -108,9 +108,7 @@ export async function startUpload(file: File) {
     // run workers
     await runWorkers(file, tasks, 4);
 
-    console.log("Upload complete");
-
     // notify master 
     const doneRes = await axios.post(`http://localhost:8080/files/${data.fileId}/done`)
-    console.log(doneRes);
+    console.log(`Done response: ${JSON.stringify(doneRes)}`);
 }

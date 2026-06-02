@@ -1,11 +1,12 @@
 "use client";
 
-import { useRef } from "react";
+import { Dispatch, SetStateAction, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { startUpload } from "@/lib/upload";
+import { Search } from "lucide-react";
 
 
-export default function Header({ onUploadComplete }: { onUploadComplete: () => void }) {
+export default function Header({ onUploadComplete, setShowSearchPage }: { onUploadComplete: () => void, setShowSearchPage: Dispatch<SetStateAction<boolean>>  }) {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const handleClick = () => {
@@ -33,9 +34,15 @@ export default function Header({ onUploadComplete }: { onUploadComplete: () => v
                 className="hidden"
             />
 
-            <Button variant="outline" size="lg" onClick={handleClick}>
-                Upload
-            </Button>
+            <div className="flex items-center gap-2">
+                <Button variant="outline" size="lg" onClick={() => setShowSearchPage(true)}>
+                    <Search />
+                </Button>
+
+                <Button variant="outline" size="lg" onClick={handleClick}>
+                    Upload
+                </Button>
+            </div>
         </div>
     );
 }
