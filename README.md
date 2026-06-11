@@ -25,5 +25,5 @@ npm run dev
 ### TODO
 
 - Create architecture diagram for storage logic
-- Plan AI smart search integration
+- Integrate Kafka between Master node and AI Service
 
