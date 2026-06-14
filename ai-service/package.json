@@ -1,21 +1,21 @@
 {
-  "name": "ai-service",
-  "type": "module",
-  "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "script": "node src/embed.ts"
-  },
-  "dependencies": {
-    "@hono/node-server": "^1.19.14",
-    "@qdrant/js-client-rest": "^1.18.0",
-    "hono": "^4.12.23",
-    "openai": "^6.42.0"
-  },
-  "devDependencies": {
-    "@types/node": "^20.11.17",
-    "tsx": "^4.7.1",
-    "typescript": "^5.8.3"
-  }
+    "name": "ai-service",
+    "type": "module",
+    "scripts": {
+        "dev": "tsx watch src/index.ts",
+        "build": "tsc",
+        "start": "node dist/index.js",
+        "script": "node src/embed.ts"
+    },
+    "dependencies": {
+        "@hono/node-server": "^1.19.14",
+        "@qdrant/js-client-rest": "^1.18.0",
+        "hono": "^4.12.23",
+        "openai": "^6.42.0"
+    },
+    "devDependencies": {
+        "@types/node": "^20.11.17",
+        "tsx": "^4.7.1",
+        "typescript": "^5.8.3"
+    }
 }

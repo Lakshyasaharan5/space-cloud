@@ -5,10 +5,10 @@ export async function search(query: string): Promise<string> {
 }
 
 async function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      console.log("Search complete");
-      resolve();
-    }, ms);
-  });
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            console.log("Search complete");
+            resolve();
+        }, ms);
+    });
 }
