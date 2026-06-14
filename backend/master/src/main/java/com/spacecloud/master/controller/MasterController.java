@@ -56,8 +56,7 @@ public class MasterController {
     @PostMapping("/files/search")
     public List<FileInfo> search(@RequestParam("q") String q) {
         System.out.println("Client search query: " + q);
-        fileService.search();
-        return fileService.getFileInfoList();
+        return fileService.search(q);
     }
 
     @GetMapping("/health")

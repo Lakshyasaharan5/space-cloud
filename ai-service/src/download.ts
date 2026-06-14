@@ -1,6 +1,3 @@
-import { mkdir, open } from "node:fs/promises";
-import path from "node:path";
-
 type Chunk = {
     chunkIndex: number;
     chunkSize: number;
@@ -22,84 +19,51 @@ type DownloadTask = {
     fileId: string;
 };
 
-const BASE_CHUNK_SIZE = 1024 * 1024; // 1MB
-
 function createDownloadTasks(res: DownloadResponse): DownloadTask[] {
     return res.chunks
-        .map((c) => ({
-            chunkIndex: c.chunkIndex,
-            chunkSize: c.chunkSize,
-            url: res.datanodes[c.primary],
+        .map((chunk) => ({
+            chunkIndex: chunk.chunkIndex,
+            chunkSize: chunk.chunkSize,
+            url: res.datanodes[chunk.primary],
             fileId: res.fileId,
         }))
         .sort((a, b) => a.chunkIndex - b.chunkIndex);
 }
 
-async function downloadChunk(task: DownloadTask): Promise<Uint8Array> {
-    console.log(`Downloading chunk ${task.chunkIndex}`);
+async function downloadChunk(task: DownloadTask): Promise<Buffer> {
 
-    const res = await fetch(`${task.url}/chunks/${task.fileId}/${task.chunkIndex}`);
+    const response = await fetch(
+        `${task.url}/chunks/${task.fileId}/${task.chunkIndex}`
+    );
 
-    if (!res.ok) {
-        throw new Error(`Failed chunk ${task.chunkIndex}`);
-    }
-
-    const arrayBuffer = await res.arrayBuffer();
-
-    if (arrayBuffer.byteLength !== task.chunkSize) {
+    if (!response.ok) {
         throw new Error(
-            `Chunk ${task.chunkIndex} size mismatch. Expected ${task.chunkSize}, got ${arrayBuffer.byteLength}`
+            `Failed to download chunk ${task.chunkIndex}: ${response.status}`
         );
     }
 
-    console.log(`Finished chunk ${task.chunkIndex}`);
+    const arrayBuffer = await response.arrayBuffer();
+    const chunk = Buffer.from(arrayBuffer);
 
-    return new Uint8Array(arrayBuffer);
-}
-
-function sanitizeFileName(name: string): string {
-    return name.replace(/[<>:"/\\|?*\x00-\x1F]/g, "_");
-}
-
-export async function download(fileId: string, name: string): Promise<string> {
-    const metadataRes = await fetch(`http://localhost:8080/download/${fileId}`);
-
-    if (!metadataRes.ok) {
-        throw new Error("Failed to fetch download metadata");
+    if (chunk.byteLength !== task.chunkSize) {
+        throw new Error(
+            `Chunk ${task.chunkIndex} size mismatch. ` +
+            `Expected ${task.chunkSize}, got ${chunk.byteLength}`
+        );
     }
 
-    const data: DownloadResponse = await metadataRes.json();
+    return chunk;
+}
 
-    const tasks = createDownloadTasks(data);
+export async function fetchFile(downloadResponse: DownloadResponse): Promise<Buffer> {
 
-    const dataDir = path.resolve(process.cwd(), "data");
-    await mkdir(dataDir, { recursive: true });
+    const tasks = createDownloadTasks(downloadResponse);
 
-    const safeName = sanitizeFileName(name);
-    const filePath = path.join(dataDir, safeName);
+    // Downloads all chunks concurrently.
+    const chunks = await Promise.all(
+        tasks.map((task) => downloadChunk(task))
+    );
 
-    const fileHandle = await open(filePath, "w");
-
-    try {
-        for (const task of tasks) {
-            const chunk = await downloadChunk(task);
-
-            const offset = task.chunkIndex * BASE_CHUNK_SIZE;
-
-            await fileHandle.write(
-                chunk,
-                0,
-                chunk.byteLength,
-                offset
-            );
-
-            console.log(`Wrote chunk ${task.chunkIndex}`);
-        }
-
-        console.log(`Download complete: ${filePath}`);
-
-        return filePath;
-    } finally {
-        await fileHandle.close();
-    }
+    // Tasks were sorted by chunkIndex, so this recreates the original file.
+    return Buffer.concat(chunks);
 }
