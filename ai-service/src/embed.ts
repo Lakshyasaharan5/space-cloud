@@ -101,7 +101,7 @@ export async function deleteEmbeddingsByFileId(
         return;
     }
 
-    await client.delete(COLLECTION_NAME, {
+    const result = await client.delete(COLLECTION_NAME, {
         wait: true,
         filter: {
             must: [
@@ -114,4 +114,5 @@ export async function deleteEmbeddingsByFileId(
             ],
         },
     });
+    console.log(`entry deleted from qdrant and here is the result: ${result}`);
 }
