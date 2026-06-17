@@ -60,16 +60,34 @@ public class FileService {
         chunkRepository.deleteByFile(file);
     }
 
+    private void deleteEmbeddingSafely(UUID fileId) {
+        try {
+            restClient.delete()
+                    .uri("/embeddings/{fileId}", fileId)
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (Exception error) {
+            System.err.println(
+                    "Failed to delete embeddings for file " + fileId
+            );
+        }
+    }
+
     @Async
     public void deleteFromDatanodesAndCleanup(UUID fileId) {
         // Blocking gRPC calls — each datanode deletes its physical chunks
         deleteGrpcClient.deleteFileOnAll(fileId.toString());
+
+        // Delete embeddings from ai service
+        deleteEmbeddingSafely(fileId);
 
         // All datanodes confirmed; remove the file row itself
         fileRepository.deleteById(fileId);
     }
 
     public void publishFileEmbeddingKafkaEvent(UUID fileId) {
+        FileEntity fileEntity = fileRepository.findById(fileId)
+                .orElseThrow(() -> new RuntimeException("File not found"));
         ChunkMapResponse event = chunkService.getChunkMapping(fileId);
         System.out.println("Embedding event: " + event.toString());
         producer.sendEmbedEvent(event);
