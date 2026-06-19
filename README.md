@@ -22,8 +22,4 @@ npm run dev
 ./mvnw spring-boot:run -Dspring-boot.run.arguments="--server.port=8081 --spring.grpc.server.port=9091 --storage.path=data-node1 --datanode.index=0"
 ```
 
-### TODO
-
-- Create architecture diagram for storage logic
-- Integrate Kafka between Master node and AI Service
 
